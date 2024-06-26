@@ -3,12 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Birthday Message</title>
+    <title>JoyfulJots</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <div class="container">
-      <h2>BIRTHDAY MESSAGE</h2>
+      <h2>JOYFULJOTS</h2>
       <form>
         <div class="form-group">
           <label for="fullName">Name:</label>
@@ -42,8 +42,6 @@
         });
 
         const data = await res.json();
-        console.log(data);
-        window.alert(`Regisration Successfull! ${name} ${email}`);
         location.assign("/register/welcome");
       });
     </script>
