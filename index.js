@@ -16,7 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 connetToDB();
 
-schedule.scheduleJob(" 0 7 * * * ", async () => {
+schedule.scheduleJob(" 59 0 7 * * * ", async () => {
   const today = new Date();
   const day = today.getDate();
   const month = today.getMonth();
