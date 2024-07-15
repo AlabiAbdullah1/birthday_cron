@@ -16,18 +16,20 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 connetToDB();
 
-schedule.scheduleJob(" 59 0 7 * * * ", async () => {
+schedule.scheduleJob("  0 7 * * * ", async () => {
   const today = new Date();
   const day = today.getDate();
-  const month = today.getMonth();
+  const month = today.getMonth() + 1;
   const year = today.getFullYear();
 
   const users = await User.find({});
 
   users.forEach((user) => {
     const userDOB = new Date(user.DOB);
-    if (userDOB.getDate() === day && userDOB.getMonth() === month) {
-      console.log(`Happy Birthday ${user.fullName} @ ${user.email}`);
+    console.log({ dbMonth: userDOB.getMonth() + 1, todayMonth: month });
+    console.log({ dbday: userDOB.getDate(), todaydate: day });
+    if (userDOB.getDate() === day && userDOB.getMonth() + 1 === month) {
+      // console.log(`Happy Birthday ${user.fullName} @ ${user.email}`);
       sendEmail(user.email, user.fullName);
     }
   });
