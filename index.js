@@ -1,5 +1,5 @@
 const express = require("express");
-const connetToDB = require("./db/dbConnection");
+const connectToDB = require("./db/dbConnection");
 const registerRoute = require("./routes/register");
 const bodyParser = require("body-parser");
 const User = require("./db/register");
@@ -14,38 +14,43 @@ app.use(express.static("public"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-connetToDB();
+connectToDB();
 
-schedule.scheduleJob("  0 7 * * * ", async () => {
-  const today = new Date();
-  const day = today.getDate();
-  const month = today.getMonth() + 1;
-  const year = today.getFullYear();
+// Schedule job to run at 7:00 AM every day
+schedule.scheduleJob("0 7 * * *", async () => {
+  try {
+    const today = new Date();
+    const day = today.getDate();
+    const month = today.getMonth() + 1; // getMonth() returns 0-11, so add 1 for human-readable months
 
-  const users = await User.find({});
+    // Fetch all registered users from the database
+    const users = await User.find({});
 
-  users.forEach((user) => {
-    const userDOB = new Date(user.DOB);
-    console.log({ dbMonth: userDOB.getMonth() + 1, todayMonth: month });
-    console.log({ dbday: userDOB.getDate(), todaydate: day });
-    if (userDOB.getDate() === day && userDOB.getMonth() + 1 === month) {
-      // console.log(`Happy Birthday ${user.fullName} @ ${user.email}`);
-      sendEmail(user.email, user.fullName);
-    }
-  });
+    users.forEach((user) => {
+      const userDOB = new Date(user.DOB);
+      if (userDOB.getDate() === day && userDOB.getMonth() + 1 === month) {
+        // If today is the user's birthday, send an email
+        sendEmail(user.email, user.fullName);
+        console.log(
+          `Sent Happy Birthday email to ${user.fullName} at ${user.email}`
+        );
+      }
+    });
+  } catch (err) {
+    console.error("Error in scheduled job:", err);
+  }
 });
 
 app.use("/register", registerRoute);
 
-const PORT = process.env.PORT;
-
-const today = new Date();
-const day = today.getDate();
-const month = today.getMonth();
-const year = today.getFullYear();
-
-const todayDate = `${year}-${day}-${month}`;
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(`Listening on port ${PORT}...  ${todayDate}`);
+  const today = new Date();
+  const day = today.getDate();
+  const month = today.getMonth() + 1; // Corrected month for logging
+  const year = today.getFullYear();
+  console.log(
+    `Server running on port ${PORT}... Today's date: ${year}-${month}-${day}`
+  );
 });
